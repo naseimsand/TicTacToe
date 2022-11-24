@@ -10,7 +10,7 @@ $(function() {
         [0,4,8],
         [2,4,6]
     ];
-    const values = [10,7,10,7,14,7,10,7,10];
+    const values = [11,7,11,7,15,7,11,7,11];
     let finished = 0;
 
     function getMaxOfArray(numArray) {
@@ -94,6 +94,8 @@ $(function() {
             }
             prio.push(tempprio);
         });
+
+        console.log(prio);
 
         let maxprio = getMaxOfArray(prio);
         const pick = find(maxprio, prio)[Math.floor(Math.random() * find(maxprio, prio).length)];
