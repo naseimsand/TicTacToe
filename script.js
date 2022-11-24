@@ -71,6 +71,7 @@ $(function() {
         
         var prio = [];
         var tempprio = 0;
+        var panic = 0;
         
         marked.forEach(function my(marking, index) {
             if(marking == 0) {
@@ -97,6 +98,13 @@ $(function() {
                             tempprio = 200;
                             break;
                         }
+                        if(index == 4 && player == 1 && ki == 0) {
+                            panic++;
+                        }
+                        if(panic == 2) {
+                            tempprio = 100;
+                            break;
+                        }
                     }
                 }
 
@@ -105,6 +113,20 @@ $(function() {
             }
             prio.push(tempprio);
         });
+        
+        var count = 0;
+        var temp = 0;
+        for(var i = 0; i < marked.length; ++i){
+            if(marked[i] == 0)
+                count++;
+            if(marked[i] == 1)
+                temp = i;
+        }
+        if(count == 8) {
+            [0,1,2,3,5,6,7,8].forEach(element => {
+                if(temp == element) prio[8-element] = 100;       
+            });
+        }
 
         console.log(prio)
 
