@@ -94,7 +94,9 @@ $(function() {
     $('body').on("click", "td.link", function(e) {
         hit = $(this).attr("id");
         mark(hit, 1);
-        ret = turn();
-        mark(ret, 2);
+        if(marked.includes(0)) {
+            ret = turn();
+            mark(ret, 2);
+        }
     });
 });
