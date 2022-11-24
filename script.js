@@ -10,7 +10,7 @@ $(function() {
         [0,4,8],
         [2,4,6]
     ];
-    const values = [11,7,11,7,14,7,11,7,11];
+    const values = [11,7,11,7,10,7,11,7,11];
     let finished = 0;
 
     function getMaxOfArray(numArray) {
@@ -28,6 +28,10 @@ $(function() {
     }
 
     function isfinish() {
+        if(marked.includes(0) == false) {
+            finished = 1;
+            finish(0);
+        }
         rows.forEach(row => {
             let player = 0;
             let ki = 0;
@@ -60,6 +64,7 @@ $(function() {
         
         $('td#' + feld).html(zeichen);
         $('td#' + feld).removeClass("link");
+        isfinish();
     }
 
     function turn() {
@@ -98,21 +103,23 @@ $(function() {
         let maxprio = getMaxOfArray(prio);
         const pick = find(maxprio, prio)[Math.floor(Math.random() * find(maxprio, prio).length)];
 
+        
         return pick;
     }
 
-    $('body').on("click", "td.link", function(e) {
+    $('body').on("click", "td.link", function() {
+        $("input").remove();
         hit = $(this).attr("id");
         mark(hit, 1);
-        isfinish();
-        if(marked.includes(0) == false) {
-            finished = 1;
-            finish(0);
-        }
         if(finished == 0) {
             ret = turn();
             mark(ret, 2);
-            isfinish();
         }
+    });
+
+    $('body').on("click", "input", function() {
+        $("input").remove();
+        ret = turn();
+        mark(ret, 2);
     });
 });
