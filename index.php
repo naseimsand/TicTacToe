@@ -5,7 +5,7 @@
     <title>TicTacToe</title>
     <link rel="stylesheet" href="style.css"></link>
     <script src="jquery-3.6.0.min.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js?<?php echo rand() ?>"></script>
 </head>
 <body>
     <h1>TicTacToe</h1>
