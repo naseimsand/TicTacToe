@@ -89,8 +89,14 @@ $(function() {
                         }
                         if(ki == 1 && player == 0) tempprio = tempprio + 6;
                         if(player == 1) tempprio = tempprio - 3;
-                        if(player == 2 && tempprio < 150) tempprio = 150;
-                        if(ki == 2) tempprio = 200;
+                        if(player == 2) {
+                            tempprio = 150;
+                            break;
+                        }
+                        if(ki == 2) {
+                            tempprio = 200;
+                            break;
+                        }
                     }
                 }
 
