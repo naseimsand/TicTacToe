@@ -11,27 +11,45 @@ $(function() {
         [2,4,6]
     ];
     const values = [10,7,10,7,14,7,10,7,10];
+    let finished = 0;
 
-    function finish(won = 0) {
-        if(won > 0) {
-            if(won == 1) {
-                $('div#output').html("Sie haben gewonnen!");
-            } else {
-                $('div#output').html("Die KI gewinnt!");
-            }
-            $('td').removeClass("link");
-        } else {
-            rows.forEach(row => {
-                let player = 0;
-                let ki = 0;
-                row.forEach(feld => {
-                    if(marked[feld] == 1) player = player + 1;
-                    if(marked[feld] == 2) ki = ki + 1;
-                });
-                if(player == 3) finish(1);
-                if(ki == 3) finish(2);
-            });
+    function getMaxOfArray(numArray) {
+        return Math.max.apply(null, numArray);
+    }  
+
+    function find(needle, haystack) {
+        var results = [];
+        var idx = haystack.indexOf(needle);
+        while (idx != -1) {
+            results.push(idx);
+            idx = haystack.indexOf(needle, idx + 1);
         }
+        return results;
+    }
+
+    function isfinish() {
+        rows.forEach(row => {
+            let player = 0;
+            let ki = 0;
+            row.forEach(feld => {
+                if(marked[feld] == 1) player = player + 1;
+                if(marked[feld] == 2) ki = ki + 1;
+            });
+            if(player == 3) finish(1);
+            if(ki == 3) finish(2);
+        });
+    }
+
+    function finish(won) {
+        finished = 1;
+        if(won == 1) {
+            $('div#output').html("Sie haben gewonnen!");
+        } else if(won == 2) {
+            $('div#output').html("Die KI gewinnt!");
+        } else {
+            $('div#output').html("Niemand hat gewonnen!");
+        }
+        $('td').removeClass("link");
     }
 
     function mark(feld, wer) {
@@ -42,7 +60,6 @@ $(function() {
         
         $('td#' + feld).html(zeichen);
         $('td#' + feld).removeClass("link");
-        finish();
     }
 
     function turn() {
@@ -50,8 +67,8 @@ $(function() {
         var prio = [];
         var tempprio = 0;
         
-        marked.forEach(function my(mark, index) {
-            if(mark == 0) {
+        marked.forEach(function my(marking, index) {
+            if(marking == 0) {
                 tempprio = values[index];
                 
                 for(let row of rows) {
@@ -78,15 +95,8 @@ $(function() {
             prio.push(tempprio);
         });
 
-        let pick = 0;
-        let lastprio = 0;
-
-        prio.forEach(function callback(value, index) {
-            if(value > lastprio) {
-                pick = index;
-                lastprio = value;
-            }
-        });
+        let maxprio = getMaxOfArray(prio);
+        const pick = find(maxprio, prio)[Math.floor(Math.random() * find(maxprio, prio).length)];
 
         return pick;
     }
@@ -94,9 +104,15 @@ $(function() {
     $('body').on("click", "td.link", function(e) {
         hit = $(this).attr("id");
         mark(hit, 1);
-        if(marked.includes(0)) {
+        isfinish();
+        if(marked.includes(0) == false) {
+            finished = 1;
+            finish(0);
+        }
+        if(finished == 0) {
             ret = turn();
             mark(ret, 2);
+            isfinish();
         }
     });
 });
