@@ -5,9 +5,16 @@
     <title>TicTacToe</title>
     <link rel="stylesheet" href="style.css"></link>
     <script src="jquery-3.6.0.min.js"></script>
-    <script src="script.js?<?php echo rand() ?>"></script>
+    <script>
+        function randomJS() {
+            var rand_no = Math.floor((300-1)*Math.random()) + 1;
+            var script = document.createElement('script');
+            script.src = "script.js?" + rand_no;
+            document.getElementsByTagName('head')[0].appendChild(script);
+        };
+    </script>
 </head>
-<body>
+<body onLoad="randomJS()">
     <h1>TicTacToe</h1>
     <table>
         <tr>
