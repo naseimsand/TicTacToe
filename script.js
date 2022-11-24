@@ -89,8 +89,8 @@ $(function() {
                         }
                         if(ki == 1 && player == 0) tempprio = tempprio + 6;
                         if(player == 1) tempprio = tempprio - 3;
-                        if(player == 2) tempprio = 90;
-                        if(ki == 2) tempprio = 100;
+                        if(player == 2 && tempprio < 150) tempprio = 150;
+                        if(ki == 2) tempprio = 200;
                     }
                 }
 
@@ -100,9 +100,10 @@ $(function() {
             prio.push(tempprio);
         });
 
+        console.log(prio)
+
         let maxprio = getMaxOfArray(prio);
         const pick = find(maxprio, prio)[Math.floor(Math.random() * find(maxprio, prio).length)];
-
         
         return pick;
     }
