@@ -1,13 +1,37 @@
 $(function() {
     const marked = [0,0,0,0,0,0,0,0,0];
+    const rows = [
+        [0,1,2],
+        [3,4,5],
+        [6,7,8],
+        [0,3,6],
+        [1,4,7],
+        [2,5,8],
+        [0,4,8],
+        [2,4,6]
+    ];
+    const values = [10,7,10,7,14,7,10,7,10];
 
-    function finish(won) {
-        if(won == 1) {
-            $('div#output').html("Sie haben gewonnen!");
+    function finish(won = 0) {
+        if(won > 0) {
+            if(won == 1) {
+                $('div#output').html("Sie haben gewonnen!");
+            } else {
+                $('div#output').html("Die KI gewinnt!");
+            }
+            $('td').removeClass("link");
         } else {
-            $('div#output').html("Die KI gewinnt!");
+            rows.forEach(row => {
+                let player = 0;
+                let ki = 0;
+                row.forEach(feld => {
+                    if(marked[feld] == 1) player = player + 1;
+                    if(marked[feld] == 2) ki = ki + 1;
+                });
+                if(player == 3) finish(1);
+                if(ki == 3) finish(2);
+            });
         }
-        $('td').removeClass("link");
     }
 
     function mark(feld, wer) {
@@ -18,100 +42,59 @@ $(function() {
         
         $('td#' + feld).html(zeichen);
         $('td#' + feld).removeClass("link");
+        finish();
     }
 
     function turn() {
-        const rows = [
-            [0,1,2],
-            [3,4,5],
-            [6,7,8],
-            [0,3,6],
-            [1,4,7],
-            [2,5,8],
-            [0,4,8],
-            [2,4,6]
-        ];
-
-        var leer = [];
-        var spieler = [];
-        var ki = [];
         
-        rows.forEach(function callback(row, key) {
-
-            leer[key] = [];
-            spieler[key] = [];
-            ki[key] = [];
-
-            row.forEach(cell => {
-                switch (marked[cell]) {
-                    case 0:
-                        leer[key].push(cell);
-                        break;
-                    case 1:
-                        spieler[key].push(cell);
-                        break;
-                    case 2:
-                        ki[key].push(cell);
-                        break;
+        var prio = [];
+        var tempprio = 0;
+        
+        marked.forEach(function my(mark, index) {
+            if(mark == 0) {
+                tempprio = values[index];
                 
-                    default:
-                        break;
+                for(let row of rows) {
+                    var player = 0;
+                    var ki = 0;
+                    if(row.includes(index)) {
+                        for(let field of row) {
+                            if(marked[field] == 1) {
+                                player = player + 1;
+                            }else if(marked[field] == 2) {
+                                ki = ki + 1;
+                            }
+                        }
+                        if(ki == 1 && player == 0) tempprio = tempprio + 6;
+                        if(player == 1) tempprio = tempprio - 3;
+                        if(player == 2) tempprio = 90;
+                        if(ki == 2) tempprio = 100;
+                    }
                 }
-                
-            });
+
+            } else {
+                tempprio = 0;
+            }
+            prio.push(tempprio);
         });
 
-        leer.forEach(function callback(row, key) {
-            if(row.length === 0) {
-                // alle felder sind belegt
-                if(spieler[key].length === 3) {
-                    // der spieler hat 3 felder
-                    finish(1);
-                    return TRUE;
-                }
-            }
-            if(row.length === 1) {
-                // Nur reihen die 1 leeres feld haben
-                if(ki[key].length === 2) {
-                    // KI Gewinnt
-                    mark(leer[key][0], 2);
-                    finish(2);
-                    return TRUE;
-                }else if(spieler[key].length === 2) {
-                    // spieler hat schon zwei felder, ki nimmt leeres feld
-                    mark(leer[key][0], 2);
-                    return TRUE;
-                }
+        let pick = 0;
+        let lastprio = 0;
+
+        prio.forEach(function callback(value, index) {
+            if(value > lastprio) {
+                pick = index;
+                lastprio = value;
             }
         });
-        ki.forEach(function callback(row, key) {
-            if(row.length === 1) {
-                // Nur reihen in denen die ki schon ein feld hat
-                if(spieler[key].length === 0) {
-                    // spieler hat in dieser reihe kein feld
-                    // ki setzt in leeres feld
-                    // ### Optimierung möglich #################
-                    mark(leer[key][0], 2);
-                    return TRUE;
-                }
-            }
-        });
-        spieler.forEach(function callback(row, key) {
-            if(row.length === 1) {
-                // Nur reihen in denen der spieler schon ein feld hat
-                if(ki[key].length === 0) {
-                    // ki hat in dieser reihe kein feld
-                    // ki setzt in leeres feld
-                    mark(leer[key][0], 2);
-                    return TRUE;
-                }
-            }
-        });
+
+        return pick;
     }
 
     $('body').on("click", "td.link", function(e) {
         hit = $(this).attr("id");
         mark(hit, 1);
         ret = turn();
+        mark(ret, 2);
     });
 });
